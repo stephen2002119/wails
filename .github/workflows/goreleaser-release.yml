@@ -1,0 +1,44 @@
+name: GoReleaser Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache: true
+          cache-dependency-path: v2/go.sum
+
+      - name: Install GoReleaser
+        run: |
+          GORELEASER_VERSION="v2.7.0"
+          OS="Linux"
+          ARCH="x86_64"
+          curl -sL "https://github.com/goreleaser/goreleaser/releases/download/${GORELEASER_VERSION}/goreleaser_${OS}_${ARCH}.tar.gz" \
+            | tar -xz goreleaser
+          sudo mv goreleaser /usr/local/bin/goreleaser
+          goreleaser --version
+
+      - name: Build binaries
+        run: goreleaser build --clean
+
+      - name: Run release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: goreleaser release --clean

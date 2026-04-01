@@ -1,0 +1,48 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: wails
+    main: ./v2/cmd/wails
+    binary: wails
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w
+      - -X github.com/stephen2002119/wails/v2/cmd/wails/internal.Version={{.Tag}}
+
+archives:
+  - id: wails
+    builds:
+      - wails
+    name_template: "wails_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: ["zip"]
+    files:
+      - LICENSE*
+      - README*
+
+checksum:
+  name_template: "checksums.txt"
+
+release:
+  github:
+    owner: stephen2002119
+    name: wails
+  name_template: "Wails {{.Tag}}"
+  draft: false
+  prerelease: auto
