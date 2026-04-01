@@ -35,9 +35,6 @@ jobs:
           sudo mv goreleaser /usr/local/bin/goreleaser
           goreleaser --version
 
-      - name: Build binaries
-        run: goreleaser build --clean
-
       - name: Run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
