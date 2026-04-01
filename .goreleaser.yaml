@@ -2,11 +2,12 @@ version: 2
 
 before:
   hooks:
-    - sh -c "cd v2 && go mod tidy"
+    - go mod tidy
 
 builds:
   - id: wails
-    main: ./v2/cmd/wails
+    main: ./cmd/wails
+    dir: v2
     binary: wails
     env:
       - CGO_ENABLED=0
